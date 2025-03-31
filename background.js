@@ -17,28 +17,40 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       return;
     }
 
-    // Truncate long selections
+    // Save selected text for popup use
+    await chrome.storage.local.set({ lastSelectedText: selectedText });
+
     const cleanedInput = selectedText.replace(/\n/g, " ").trim().slice(0, 600);
-    const prompt = `Summarize this text in 2-3 sentences:\n\n${cleanedInput}`;
+
+    // Read selected model from popup (defaults to Falcon)
+    const { selectedModel = "falcon" } = await chrome.storage.local.get("selectedModel");
+
+    let endpoint = "";
+    let body = {};
+    if (selectedModel === "bart") {
+      endpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+      body = { inputs: cleanedInput };
+    } else {
+      endpoint = "https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct";
+      body = { inputs: `Summarize this text in 2-3 sentences:\n\n${cleanedInput}` };
+    }
 
     try {
-      // Call Falcon 7B model from Hugging Face
-      const response = await fetch("https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct", {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
-          "Authorization": "Bearer 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",
+          "Authorization": "Bearer YOUR_TOKEN_HERE",  // Replace with your actual token
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ inputs: prompt })
+        body: JSON.stringify(body)
       });
 
       const data = await response.json();
       console.log("🧠 Hugging Face response:", data);
 
-      // Extract summary and clean echo if needed
       let summary = data[0]?.generated_text || "No summary returned.";
-      if (summary.startsWith(prompt)) {
-        summary = summary.replace(prompt, "").trim();
+      if (selectedModel === "falcon" && summary.startsWith(body.inputs)) {
+        summary = summary.replace(body.inputs, "").trim();
       }
 
       // Inject floating summary bubble
