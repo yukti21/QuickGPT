@@ -8,12 +8,14 @@ QuickGPT is a Chrome extension that allows users to highlight any text on a webp
 
 - ✅ Right-click context menu integration
 - ✅ Sends selected text to Hugging Face API
-- ✅ Uses `tiiuae/falcon-7b-instruct` for summarization
+- ✅ Model switching: `Falcon 7B Instruct` / `BART Large CNN`
 - ✅ Truncates long input to 600 characters for stability
-- ✅ Displays result in a custom floating bubble (replaces ugly `alert()`)
-- ✅ Strips model prompt echoes from output for cleaner UX
-- ✅ Handles unexpected API responses or errors
-- ✅ Logs output using `console.log()` for debugging (via Chrome DevTools)
+- ✅ Floating bubble shows the summary (not `alert()`)
+- ✅ “Copy to Clipboard” button inside the bubble
+- ✅ Popup UI to control model & re-summarize last input
+- ✅ Stores model preference & last selected text via `chrome.storage`
+- ✅ Handles API errors gracefully
+- ✅ Logs debug info using `console.log()` (for DevTools)
 
 ---
 
@@ -31,54 +33,39 @@ QuickGPT/
 
 
 
-# 🧪 Current Status
+## 🧠 Model Options
 
-- [x] Right-click → Summarize works
-- [x] Text is sent to Falcon 7B model
-- [x] Summary is injected as a styled popup
-- [x] Repeated prompt/input is stripped from output
-- [ ] Summary can still be long or incoherent (model limitation)
-- [ ] UI could use copy button, auto-dismiss, or loader
+| Model              | Description                              |
+|-------------------|------------------------------------------|
+| Falcon 7B Instruct | General-purpose instruction-following    |
+| BART Large CNN     | Summarization-specific, concise output   |
 
----
-
-## 🛠️ Next Steps (Planned)
-
-- [ ] Add “Copy to Clipboard” button in the bubble
-- [ ] Replace bubble with a draggable or dismissible panel
-- [ ] Use a summarization-specific model (`bart-large-cnn`)
-- [ ] Add error handling for model loading, rate limits
-- [ ] Store previous summaries in `chrome.storage`
+You can switch models in the extension popup!
 
 ---
 
-## 💻 How to Test Locally
+## 🚀 How to Get a Hugging Face API Token
+
+1. Go to [https://huggingface.co](https://huggingface.co)
+2. Log in or create an account
+3. Click your profile > Settings > Access Tokens
+4. Create a **new token** (choose "Read" access)
+5. Copy the token and **replace** `YOUR_TOKEN_HERE` in both:
+   - `background.js`
+   - `popup.js`
+
+```js
+headers: {
+  "Authorization": "Bearer YOUR_TOKEN_HERE",
+  ...
+}
+
+## 💻 How to Implement Locally
 
 1. Go to `chrome://extensions` in Chrome
 2. Enable “Developer mode”
 3. Click “Load Unpacked”
 4. Select the `QuickGPT/` project folder
 5. Highlight any text on a webpage → Right-click → “Summarize with QuickGPT”
-
-> 🧠 Summary will appear in a floating styled bubble in the corner of the page.
-
----
-
-## 🧠 Known Issues
-
-- Falcon 7B may echo inputs or generate longer-than-expected responses.
-- Hugging Face's inference API can be slow the first time (model cold-start).
-- Current summary display uses basic CSS, needs polish.
-- Token is hardcoded for now — move to backend for production.
-
----
-
-## 👤 Maintainer
-
-- **Name:** Yukti  
-- **Project Status:** In progress  
-- **Repo Name:** `QuickGPT`
-
----
 
 > Made with ❤️ using Chrome Manifest v3, Hugging Face Inference API, and open-source LLMs.
