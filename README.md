@@ -19,18 +19,6 @@ QuickGPT is a Chrome extension that allows users to highlight any text on a webp
 
 ---
 
-## 📂 Project Structure
-
-QuickGPT/
-├── manifest.json        ← Chrome extension config
-├── background.js        ← Handles context menu & API calls
-├── popup.html           ← (Optional) UI for future chat/summary
-├── popup.js             ← (Optional) handles popup logic
-├── styles.css           ← (Optional) styling for popup UI
-├── assets/
-│   └── icon.png         ← Your chatbot icon
-├── README.md            ← Project documentation
-
 
 
 ## 🧠 Model Options
@@ -54,7 +42,6 @@ You can switch models in the extension popup!
    - `background.js`
    - `popup.js`
 
-```js
 headers: {
   "Authorization": "Bearer YOUR_TOKEN_HERE",
   ...
